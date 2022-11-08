@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Digimon!</title>
+        <link rel="stylesheet" href="./styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <section id="seleccionar-mascota">
+
+            <img id="logo" src="./assets/digilogo.png" alt="">
+
+            <h1 class="titulo"></h1> 
+
+            <h2 class="subtitulo">Select Your Digimon:</h2>
+
+            <div id='contenedorTarjetas' class="tarjetas">
+                
+            </div>
+
+            <button id="boton-mascota">Select</button>
+        </section>
+
+        <section id="ver-mapa">
+            <h2 class="subtitulo">Take a look with your Digimon</h2>
+            <canvas id="mapa"></canvas>
+            <div class="botones-control">
+                    <button class="controles" id="up" onmousedown="moverArriba()" onmouseup="detenerMovimiento()">⬆</button>
+                <div>
+                    <button class="controles" id="down" onmousedown="moverAbajo()" onmouseup="detenerMovimiento()">⬇</button>
+                    <button class="controles" id="right" onmousedown="moverDerecha()" onmouseup="detenerMovimiento()">➡</button>
+                    <button class="controles" id="left" onmousedown="moverIzquierda()" onmouseup="detenerMovimiento()">⬅</button>
+                </div>
+                
+            </div>
+        </section>
+
+        <section id="seleccionar-ataque">
+            
+            <div>
+                <img src="./assets/digimon-greymon.gif" alt="" style="width: 200px;">
+            </div>
+
+            <h2 class="subtitulo">Select Your Attack:</h2>
+
+            <div id='contenedorAtaques' class="tarjetas-ataques">
+
+            </div>
+
+            <div id="mensajes">
+                <p id="resultado">GOOD LUCK!</p>
+
+                <section id="reiniciar">
+                    <button id="boton-reiniciar">Play Again</button>
+                </section>
+            </div>
+            <div class="ataques">
+                <div class="ataques-jugador">
+                    <p id="vidas-jugador">0</p>
+                    <p id="mascota-jugador"></p>
+                    <div id="ataques-del-jugador"></div>
+                </div>
+                <div class="ataques-enemigo">
+                    <p id="vidas-enemigo">0</p>
+                    <p id="mascota-enemigo"></p>
+                    <div id="ataques-del-enemigo"></div>
+                </div>
+            </div>
+        </section>
+        <script src="./js/Digimon.js"></script>
+    </body>
+</html>
