@@ -2,8 +2,22 @@ const express = require("express")
 
 const app = express()
 
-app.get("/", (req, res) => {
-   res.send("Hola") 
+const jugadores = []
+
+class Jugador {
+    constructor(id){
+        this.id = id
+    }
+}
+
+app.get("/login", (req, res) => {
+    const id = `${Math.random()}`
+
+    const jugador = new Jugador(id)
+
+    jugadores.push(jugador)
+
+   res.send(id) 
 })
 
 app.listen(8080, ()=> {
