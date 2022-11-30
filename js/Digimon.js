@@ -22,7 +22,9 @@ const sectionVerMapa = document.getElementById('ver-mapa')
 const mapa = document.getElementById('mapa')
 
 let jugadorId = null
+let enemigoId = null
 let mokepones = []
+let mokeponesEnemigos = []
 let ataqueJugador =[]
 let ataqueEnemigo = []
 let opcionDeMokepones
@@ -69,13 +71,14 @@ mapa.width = anchoDelMapa
 mapa.height = alturaBuscada
 
 class Mokepon {
-    constructor(nombre, foto, vida,fotoMapa) {
+    constructor(nombre, foto, vida,fotoMapa, id = null) {
+        this.id = id
         this.nombre = nombre
         this.foto = foto
         this.vida = vida
         this.ataques = []
-        this.ancho = 50
-        this.alto = 50
+        this.ancho = 65
+        this.alto = 65
         this.x = aleatorio(0, mapa.width - this.ancho)
         this.y = aleatorio(0, mapa.height - this.alto)
         this.mapaFoto = new Image()
@@ -96,14 +99,11 @@ class Mokepon {
     }
 }
 
-let mermaimon = new Mokepon('Mermaimon', './assets/Wavemon.gif' , 5, './assets/Wavemon.gif')
-let ogremonEnemigo = new Mokepon('Mermaimon', './assets/Wavemon.gif' , 5, './assets/ogremon.png')
+let mermaimon = new Mokepon('Mermaimon', './assets/Wavemon.gif' , 5, './assets/Wavemon.gif',)
 
 let palmon = new Mokepon('Palmon', './assets/Earthmon.gif', 5, './assets/Earthmon.gif')
-let dinomonEnemigo = new Mokepon('Palmon', './assets/Earthmon.gif', 5, './assets/dinomon.png')
 
 let greymon = new Mokepon('Greymon', './assets/Hellmon.gif', 5, './assets/Hellmon.gif')
-let mugendramonEnemigo = new Mokepon('Greymon', './assets/Hellmon.gif', 5, './assets/mugendramon.gif')
 
 let metaletemon = new Mokepon('Metaletemon', './assets/metaletemon.gif', 5, './assets/metaletemon.gif')
 
@@ -111,54 +111,67 @@ let alphamon = new Mokepon('Alphamon', './assets/alphamon.gif', 5, './assets/alp
 
 let puppetmon = new Mokepon('Puppetmon', './assets/puppetmon.gif', 5, './assets/puppetmon.gif')
 
-
-mermaimon.ataques.push(
+const MERMAIMON_ATAQUES = [
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '🔥', id: 'boton-fuego' },
     { nombre: '🌱', id: 'boton-tierra' },
-)
+]
 
-palmon.ataques.push(
+mermaimon.ataques.push(...MERMAIMON_ATAQUES)
+
+const PALMON_ATAQUES = [
     { nombre: '🌱', id: 'boton-tierra' },
     { nombre: '🌱', id: 'boton-tierra' },
     { nombre: '🌱', id: 'boton-tierra' },
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '🔥', id: 'boton-fuego' },
-)
+]
 
-greymon.ataques.push(
+palmon.ataques.push(...PALMON_ATAQUES)
+
+const GREYMON_ATAQUES = [
     { nombre: '🔥', id: 'boton-fuego' },
     { nombre: '🔥', id: 'boton-fuego' },
     { nombre: '🔥', id: 'boton-fuego' }, 
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '🌱', id: 'boton-tierra' },
-)
+]
 
-metaletemon.ataques.push(
+greymon.ataques.push(...GREYMON_ATAQUES)
+
+const METALETEMON_ATAQUES = [
     { nombre: '🔥', id: 'boton-fuego' },
     { nombre: '🔥', id: 'boton-fuego' },
     { nombre: '🔥', id: 'boton-fuego' }, 
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '🌱', id: 'boton-tierra' },
-)
+]
 
-alphamon.ataques.push(
+metaletemon.ataques.push(...METALETEMON_ATAQUES)
+
+const ALPHAMON_ATAQUES = [
     { nombre: '🌱', id: 'boton-tierra' }, 
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '🔥', id: 'boton-fuego' },
     { nombre: '🔥', id: 'boton-fuego' },
-)
+]
 
-puppetmon.ataques.push(
+alphamon.ataques.push(...ALPHAMON_ATAQUES)
+
+const PUPPETMON_ATAQUES = [
     { nombre: '🌱', id: 'boton-tierra' },
     { nombre: '🌱', id: 'boton-tierra' },
     { nombre: '🌱', id: 'boton-tierra' },
     { nombre: '💧', id: 'boton-agua' },
     { nombre: '🔥', id: 'boton-fuego' },
-)
+]
+
+puppetmon.ataques.push(...PUPPETMON_ATAQUES)
+
+
 mokepones.push(mermaimon,palmon,greymon,metaletemon,alphamon,puppetmon)
 
 
@@ -301,19 +314,48 @@ function secuenciaAtaque() {
                 console.log(ataqueJugador)
                 boton.style.background = '#013220'
             }
-            ataqueAleatorioEnemigo()
+            if(ataqueJugador.length === 5){
+                enviarAtaques()
+            }
         })
     })
     
 
 }
 
-function seleccionarMascotaEnemigo() {
-    let mascotaAleatoria = aleatorio(0, mokepones.length -1)
+function enviarAtaques(){
+    fetch('http://localhost:8080/mokepon/${jugadorId}/ataques', {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json"
+        },
+       body: JSON.stringify({
+        ataques: ataqueJugador
+       }) 
+    })
 
-    spanMascotaEnemigo.innerHTML = mokepones[mascotaAleatoria].nombre
-    ataquesMokeponEnemigo = mokepones[mascotaAleatoria].ataques
-    secuenciaAtaque()
+    intervalo = setInterval(obtenerAtaques, 50)
+}
+
+function obtenerAtaques() {
+    fetch('http://localhost:8080/mokepon/${enemigoId}/ataques')
+    .then(function (res) {
+        if (res.ok) {
+            res.json()
+            .then (function ({ataques}) {
+               if (ataques.length === 5){
+                ataqueEnemigo = ataques
+                combate()
+               } 
+            })
+        }
+    })
+}
+
+function seleccionarMascotaEnemigo(enemigo) {   
+        spanMascotaEnemigo.innerHTML=enemigo.nombre
+        ataquesMokeponEnemigo=enemigo.ataques
+        secuenciaAtaque()
 }
 
 function ataqueAleatorioEnemigo() {
@@ -342,6 +384,7 @@ function indexAmbosOponente(jugador, enemigo) {
 }
 
 function combate() {
+    clearInterval(intervalo)
     
     for (let index = 0; index < ataqueJugador.length; index++) {
         if(ataqueJugador[index] === ataqueEnemigo[index]) {
@@ -437,14 +480,11 @@ function pintarCanvas(){
 
         enviarPosicion(mascotaJugadorObjeto.x, mascotaJugadorObjeto.y)
 
-    ogremonEnemigo.pintarDigi()
-    dinomonEnemigo.pintarDigi()
-    mugendramonEnemigo.pintarDigi()
-    if (mascotaJugadorObjeto.velocidadX !== 0 || mascotaJugadorObjeto.velocidadY !== 0){
-        revisarColision(ogremonEnemigo)
-        revisarColision(mugendramonEnemigo)
-        revisarColision(dinomonEnemigo)
-    }
+    mokeponesEnemigos.forEach(function (mokepon) {
+        mokepon.pintarDigi()
+        revisarColision(mokepon)
+    })
+    
 }
 
 function enviarPosicion(x,y){
@@ -457,6 +497,36 @@ function enviarPosicion(x,y){
             x,
             y
         })
+    })
+    .then(function (res) {
+        if (res.ok){
+            res.json()
+            .then(function({ enemigos }) {
+               console.log(enemigos)
+              mokeponesEnemigos = enemigos.map(function (enemigo) {
+                let mokeponEnemigo = null
+                const mokeponNombre = enemigo.mokepon.nombre || ""
+                if (mokeponNombre === 'Mermaimon') {
+                     mokeponEnemigo = new Mokepon('Mermaimon', './assets/Wavemon.gif' , 5, './assets/Wavemon.gif' , enemigo.id)
+                } else if (mokeponNombre === 'Palmon'){
+                    mokeponEnemigo = new Mokepon('Palmon', './assets/Earthmon.gif', 5, './assets/Earthmon.gif' , enemigo.id)
+                } else if (mokeponNombre === 'Greymon'){
+                     mokeponEnemigo = new Mokepon('Greymon', './assets/Hellmon.gif', 5, './assets/Hellmon.gif' , enemigo.id)
+                } else if (mokeponNombre === 'Metaletemon'){
+                     mokeponEnemigo = new Mokepon('Metaletemon', './assets/metaletemon.gif', 5, './assets/metaletemon.gif' , enemigo.id)
+                } else if (mokeponNombre === 'Alphamon'){
+                     mokeponEnemigo = new Mokepon('Alphamon', './assets/alphamon.gif', 5, './assets/alphamon.gif' , enemigo.id)
+                } else if (mokeponNombre === 'Puppetmon'){
+                     mokeponEnemigo = new Mokepon('Puppetmon', './assets/puppetmon.gif', 5, './assets/puppetmon.gif' , enemigo.id)
+                }
+
+                mokeponEnemigo.x = enemigo.x
+                mokeponEnemigo.y = enemigo.y
+
+                return mokeponEnemigo
+               })
+            })
+        }
     })
 }
 
@@ -548,12 +618,11 @@ function revisarColision(enemigo){
       return;  
     }
 
-
-    sectionSeleccionarAtaque.style.display = 'flex'
-    sectionVerMapa.style.display = 'none'
     detenerMovimiento()
     clearInterval(intervalo)
-    alert("💥!!Random Digimon has appear!!💥") 
-}
+    console.log('Se detecto una colision');enemigoId=enemigo.id
+    sectionSeleccionarAtaque.style.display = 'flex'
+    sectionVerMapa.style.display = 'none'
+    seleccionarMascotaEnemigo(enemigo)}
 
 window.addEventListener('load', iniciarJuego)
